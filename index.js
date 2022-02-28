@@ -84,5 +84,22 @@ app.post('/api/teachers',(req,res)=>{
     })
 })
 
+app.get('/api/students',(req,res)=>{
+    const sql = `SELECT nombre,apellido,fecnac,sexo FROM estudiantes`;
+    connection.query(sql,(err,result)=>{
+        if(err) throw err;
+        if(result.length > 0){
+            res.json({
+                authentication:true
+            });
+        }
+        else{
+            res.json({
+                authentication:false
+            })
+        }
+    });
+})
+
 // Listener
 app.listen(PORT,console.log(`Server running on port ${PORT}`));
