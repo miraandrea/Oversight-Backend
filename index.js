@@ -1,6 +1,7 @@
 // Libraries
 const express = require('express');
 const mysql = require('mysql');
+const cors = require('cors');
 
 // Setting Database
 const connection = mysql.createConnection({
@@ -19,6 +20,7 @@ const PORT = process.env.PORT || 8080;
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(cors());
 
 // Routes
 app.get('/',(req,res)=>{
