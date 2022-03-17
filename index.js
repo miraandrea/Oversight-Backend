@@ -44,5 +44,45 @@ app.post('/api/authenticate',(req,res)=>{
     });
 })
 
+app.post('/api/students',(req,res)=>{
+    const sql = `INSERT INTO estudiantes SET ?`;
+    const objStudent = {
+        idestudiante: req.body.document,
+        foto: req.body.photo,
+        nombre: req.body.studentName,
+        apellido: req.body.studentLastName,
+        idcurso: req.body.course,
+        fecnac: req.body.dateBirth,
+        sexo: req.body.sex,
+        firma: req.body.signature
+    }
+    connection.query(sql,objStudent,error =>{
+        if(error) throw error;
+        res.json({
+            registeredStudent:true
+        })
+    })
+})
+
+app.post('/api/teachers',(req,res)=>{
+    const sql = `INSERT INTO docentes SET ?`;
+    const objTeacher = {
+        iddocente: req.body.document,
+        foto: req.body.photo,
+        nombre: req.body.teacherName,
+        apellido: req.body.teacherLastName,
+        idasignatura: req.body.subject,
+        fecnac: req.body.dateBirth,
+        sexo: req.body.sex,
+        firma: req.body.signature
+    }
+    connection.query(sql,objTeacher,error =>{
+        if(error) throw error;
+        res.json({
+            registeredTeacher:true
+        })
+    })
+})
+
 // Listener
 app.listen(PORT,console.log(`Server running on port ${PORT}`));
