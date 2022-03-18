@@ -86,5 +86,21 @@ app.post('/api/teachers',(req,res)=>{
     })
 })
 
+// 
+app.get('/api/courses',(req,res)=>{
+    const sql = 'SELECT * FROM cursos';
+    connection.query(sql,(error,results)=>{
+        if(error) throw error;
+        if(results.length > 0){
+            res.json(results)
+        }
+        else{
+            res.json({
+                message:"Not found courses"
+            })
+        }
+    })
+})
+
 // Listener
 app.listen(PORT,console.log(`Server running on port ${PORT}`));
