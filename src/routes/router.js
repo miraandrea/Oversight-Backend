@@ -124,4 +124,9 @@ router.get("/v1/courses", (req, res) => {
   }
 });
 
+// Api to send a "Not Found" message when the user commits a 404 error
+router.get("*", (req, res) => {
+  res.status(404).json({ message: "Not Found" });
+});
+
 module.exports = router;
