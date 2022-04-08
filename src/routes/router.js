@@ -17,7 +17,7 @@ router.get("/", (req, res) => {
 });
 
 // Api to validate if a user can authenticate to the system
-router.post("/v1/authenticate", (req, res) => {
+router.post("/v2/authenticate", (req, res) => {
   try {
     const sql = `SELECT * FROM administradores WHERE idadministrador = '${req.body.username}' AND idadministrador = '${req.body.password}'`;
     connection.query(sql, (err, result) => {
@@ -25,10 +25,31 @@ router.post("/v1/authenticate", (req, res) => {
       if (result.length > 0) {
         res.status(200).json({
           authentication: true,
+          rol: "Administrator",
         });
       } else {
-        res.status(200).json({
-          authentication: false,
+        const sql = `SELECT * FROM docentes WHERE iddocente = '${req.body.username}' AND iddocente = '${req.body.password}'`;
+        connection.query(sql, (err, result) => {
+          if (err) throw err;
+          if (result.length > 0) {
+            res.status(200).json({
+              authentication: true,
+              rol: "Teacher",
+            });
+          } else {
+            const sql = `SELECT * FROM estudiantes WHERE idestudiante = '${req.body.username}' AND idestudiante = '${req.body.password}'`;
+            connection.query(sql, (err, result) => {
+              if (err) throw err;
+              if (result.length > 0) {
+                res.status(200).json({
+                  authentication: true,
+                  rol: "Student",
+                });
+              } else {
+                res.status(200).json({ authentication: false });
+              }
+            });
+          }
         });
       }
     });
