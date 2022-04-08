@@ -124,6 +124,21 @@ router.get("/v1/courses", (req, res) => {
   }
 });
 
+// Api to display all students of the corresponding course
+router.get("/v1/courses/:name", (req, res) => {
+  try {
+    const sql = `CALL pa_estudiantes_por_curso('${req.params.name}')`;
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        res.status(200).json(results[0]);
+      }
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Api to send a "Not Found" message when the user commits a 404 error
 router.get("*", (req, res) => {
   res.status(404).json({ message: "Not Found" });
