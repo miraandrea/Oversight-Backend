@@ -17,33 +17,36 @@ router.get("/", (req, res) => {
 });
 
 // Api to validate if a user can authenticate to the system
-router.post("/v2/authenticate", (req, res) => {
+router.post("/v3/authenticate", (req, res) => {
   try {
-    const sql = `SELECT * FROM administradores WHERE idadministrador = '${req.body.username}' AND idadministrador = '${req.body.password}'`;
+    const sql = `SELECT foto,nombre,apellido,fecnac FROM administradores WHERE idadministrador = '${req.body.username}' AND idadministrador = '${req.body.password}'`;
     connection.query(sql, (err, result) => {
       if (err) throw err;
       if (result.length > 0) {
         res.status(200).json({
           authentication: true,
           rol: "Administrator",
+          data: result,
         });
       } else {
-        const sql = `SELECT * FROM docentes WHERE iddocente = '${req.body.username}' AND iddocente = '${req.body.password}'`;
+        const sql = `SELECT foto,nombre,apellido,fecnac,sexo,firma FROM docentes WHERE iddocente = '${req.body.username}' AND iddocente = '${req.body.password}'`;
         connection.query(sql, (err, result) => {
           if (err) throw err;
           if (result.length > 0) {
             res.status(200).json({
               authentication: true,
               rol: "Teacher",
+              data: result,
             });
           } else {
-            const sql = `SELECT * FROM estudiantes WHERE idestudiante = '${req.body.username}' AND idestudiante = '${req.body.password}'`;
+            const sql = `SELECT foto,nombre,apellido,fecnac,sexo,firma FROM estudiantes WHERE idestudiante = '${req.body.username}' AND idestudiante = '${req.body.password}'`;
             connection.query(sql, (err, result) => {
               if (err) throw err;
               if (result.length > 0) {
                 res.status(200).json({
                   authentication: true,
                   rol: "Student",
+                  data: result,
                 });
               } else {
                 res.status(200).json({ authentication: false });
