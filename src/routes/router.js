@@ -148,6 +148,25 @@ router.get("/v1/courses", (req, res) => {
   }
 });
 
+// Api to display all currently created courses
+router.get("/v2/courses", (req, res) => {
+  try {
+    const sql = "CALL pa_todos_los_cursos()";
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        res.json(results[0]);
+      } else {
+        res.json({
+          message: "Not found courses",
+        });
+      }
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Api to display all students of the corresponding course
 router.get("/v1/courses/:name", (req, res) => {
   try {
