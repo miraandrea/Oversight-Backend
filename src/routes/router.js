@@ -89,6 +89,30 @@ router.post("/v1/students", (req, res) => {
     res.status(500).json({ message: "System Error" });
   }
 });
+// Api to add a new student in the system
+router.post("/v2/students", (req, res) => {
+  try {
+    const sql = `INSERT INTO estudiantes SET ?`;
+    const objStudent = {
+      idestudiante: req.body.document,
+      foto: req.body.photo,
+      nombre: req.body.name,
+      apellido:req.body.lastName,
+      idcurso: req.body.course,
+      fecnac: req.body.dateBirth,
+      sexo: req.body.sex,
+      firma: req.body.signature
+    };
+    connection.query(sql, objStudent, (error) => {
+      if (error) throw error;
+      res.json({
+        registeredStudent: true,
+      });
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
 
 // Api to add a new teacher in the system
 router.post("/v1/teachers", (req, res) => {
@@ -115,6 +139,30 @@ router.post("/v1/teachers", (req, res) => {
   }
 });
 
+// Api to add a new teacher in the system
+router.post("/v2/teachers", (req, res) => {
+  try {
+    const sql = `INSERT INTO docentes SET ?`;
+    const objTeacher = {
+      iddocente: req.body.document,
+      foto: req.body.photo,
+      nombre: req.body.name,
+      apellido:req.body.lastName,
+      idasignatura: req.body.subject,
+      fecnac: req.body.dateBirth,
+      sexo: req.body.sex,
+      firma: req.body.signature,
+    };
+    connection.query(sql, objTeacher, (error) => {
+      if (error) throw error;
+      res.json({
+        registeredTeacher: true,
+      });
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
 // Api to add a new course to the database
 router.post("/v1/courses", (req, res) => {
   try {
