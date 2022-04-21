@@ -114,6 +114,27 @@ router.post("/v2/students", (req, res) => {
   }
 });
 
+// Api to display all currently created teachers
+router.get('/v1/teachers',(req,res)=>{
+  try{
+    const sql = `CALL pa_todos_los_docentes`;
+    connection.query(sql, (error,results)=>{
+      if(error) throw error;
+      if(results.length > 0){
+        const token = jwt.sign({results},tokenSignature);
+        res.status(200).json(token);
+      }
+      else{
+        const token = jwt.sign({existProfessors:false},tokenSignature);
+        res.status(200).json(token);
+      }
+    })
+  }
+  catch{
+    res.status(500).json({ message: "System Error" });
+  }
+})
+
 // Api to add a new teacher in the system
 router.post("/v1/teachers", (req, res) => {
   try {
