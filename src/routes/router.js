@@ -97,11 +97,11 @@ router.post("/v2/students", (req, res) => {
       idestudiante: req.body.document,
       foto: req.body.photo,
       nombre: req.body.name,
-      apellido:req.body.lastName,
+      apellido: req.body.lastName,
       idcurso: req.body.course,
       fecnac: req.body.dateBirth,
       sexo: req.body.sex,
-      firma: req.body.signature
+      firma: req.body.signature,
     };
     connection.query(sql, objStudent, (error) => {
       if (error) throw error;
@@ -115,25 +115,44 @@ router.post("/v2/students", (req, res) => {
 });
 
 // Api to display all currently created teachers
-router.get('/v1/teachers',(req,res)=>{
-  try{
+router.get("/v1/teachers", (req, res) => {
+  try {
     const sql = `CALL pa_todos_los_docentes`;
-    connection.query(sql, (error,results)=>{
-      if(error) throw error;
-      if(results.length > 0){
-        const token = jwt.sign({results},tokenSignature);
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        const token = jwt.sign({ results }, tokenSignature);
+        res.status(200).json(token);
+      } else {
+        const token = jwt.sign({ existProfessors: false }, tokenSignature);
         res.status(200).json(token);
       }
-      else{
-        const token = jwt.sign({existProfessors:false},tokenSignature);
-        res.status(200).json(token);
-      }
-    })
-  }
-  catch{
+    });
+  } catch {
     res.status(500).json({ message: "System Error" });
   }
-})
+});
+
+// Api to display a specific teacher according to their name
+router.get("/v1/teachers/:name", (req, res) => {
+  try {
+    const sql = `CALL pa_docente_por_nombre('${req.params.name}')`;
+    connection.query(sql, (error, result) => {
+      if (error) throw error;
+      if (result.length > 0) {
+        console.log(result[0]);
+        const token = jwt.sign({ result:result[0] }, tokenSignature);
+        res.status(200).json(token);
+      }
+      else{        
+        const token = jwt.sign({ existProfessor: false }, tokenSignature);
+        res.status(200).json(token);
+      }
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
 
 // Api to add a new teacher in the system
 router.post("/v1/teachers", (req, res) => {
@@ -168,7 +187,7 @@ router.post("/v2/teachers", (req, res) => {
       iddocente: req.body.document,
       foto: req.body.photo,
       nombre: req.body.name,
-      apellido:req.body.lastName,
+      apellido: req.body.lastName,
       idasignatura: req.body.subject,
       fecnac: req.body.dateBirth,
       sexo: req.body.sex,
@@ -247,8 +266,8 @@ router.get("/v3/courses", (req, res) => {
     connection.query(sql, (error, results) => {
       if (error) throw error;
       if (results.length > 0) {
-        const token = jwt.sign({results},tokenSignature);
-        res.status(200).json(token)
+        const token = jwt.sign({ results }, tokenSignature);
+        res.status(200).json(token);
       } else {
         res.json({
           message: "Not found courses",
@@ -280,7 +299,7 @@ router.get("/v1/decode/:token", (req, res) => {
   try {
     const token = req.params.token;
     const tokenDecode = jwt.decode(token);
-    res.status(200).json(tokenDecode.results[0]);
+    res.status(200).json(tokenDecode.results);
   } catch {
     res.status(500).json({ message: "System Error" });
   }
