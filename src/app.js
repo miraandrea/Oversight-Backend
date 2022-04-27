@@ -9,7 +9,7 @@ const app = express();
 const apiStudents = require("./routes/student");
 const apiTeachers = require("./routes/teacher");
 const apiTokens = require("./routes/token");
-const apiCourses = require("./routes/courses");
+const apiCourses = require("./routes/course");
 const apiAdministrators = require("./routes/administrator");
 
 // Middlewares
