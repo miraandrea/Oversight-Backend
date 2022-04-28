@@ -66,4 +66,24 @@ router.post("/v1/courses", (req, res) => {
   }
 });
 
+// Api to add a new course to the database
+router.post("/v2/courses", async (req, res) => {
+  try {
+    const { idCourse, name } = await req.body;
+    const result = await cloudinary.v2.uploader.upload(req.file.path)
+    const objCourse = {
+      idcurso: idCourse,
+      nombre: name,
+      foto: result.url
+    };
+    const sql = "INSERT INTO cursos SET ?";
+    connection.query(sql, objCourse, (error) => {
+      if (error) throw error;
+      res.status(200).json({ courseRegistered: true });
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 module.exports = router;
