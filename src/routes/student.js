@@ -13,6 +13,22 @@ const connection = require("../database");
 
 // Routes
 
+// Api to display a student by name based on the name parameter
+router.get("/v1/students/:name", (req, res) => {
+  try {
+    const sql = `CALL pa_estudiante_por_nombre('${req.params.name}')`;
+    connection.query(sql,(error,result)=>{
+      if(error) throw error;
+      if(result.length > 0){
+        const token = jwt.sign({results:result},tokenSignature)
+        res.status(200).json(token);
+      }
+    })
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Api to add a new student in the system
 router.post("/v2/students", (req, res) => {
   try {
