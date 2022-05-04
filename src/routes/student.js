@@ -17,13 +17,29 @@ const connection = require("../database");
 router.get("/v1/students/:name", (req, res) => {
   try {
     const sql = `CALL pa_estudiante_por_nombre('${req.params.name}')`;
-    connection.query(sql,(error,result)=>{
-      if(error) throw error;
-      if(result.length > 0){
-        const token = jwt.sign({results:result},tokenSignature)
+    connection.query(sql, (error, result) => {
+      if (error) throw error;
+      if (result.length > 0) {
+        const token = jwt.sign({ results: result }, tokenSignature);
         res.status(200).json(token);
       }
-    })
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
+// Api to visualize all the annotations made to a specific student
+router.get("/v1/students/:name/observers", (req, res) => {
+  try {
+    const sql = `CALL pa_anotaciones_por_nombre('${req.params.name}')`;
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        const token = jwt.sign({ results: results[0] }, tokenSignature);
+        res.status(200).json(token);
+      }
+    });
   } catch {
     res.status(500).json({ message: "System Error" });
   }
