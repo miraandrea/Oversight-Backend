@@ -2,6 +2,10 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
+// Modules exports
+const uploadImage = require("../multer");
+const cloudinary = require("../cloudinary");
+
 // Authentication Token Signature
 const tokenSignature = "OAFzGSpmBX9F$agY#$gX4!RnU0Vfgev@mdkO6!1YGwfUzES*^k";
 
@@ -69,5 +73,24 @@ router.post("/v2/students", (req, res) => {
     res.status(500).json({ message: "System Error" });
   }
 });
+
+// Api to add a new student in the system
+router.post("/v3/students", uploadImage.single("studentImage") , async (req, res) => {
+    try {
+      const { document, name, lastName,idcourse, dateOfBirth, genre, signature } =
+        req.body;
+      const result = await cloudinary.uploader.upload(req.file.path);
+      const sql = `INSERT INTO estudiantes(documento,foto,nombre,apellido,fecnac,idcurso,genero,firma) VALUES('${document}','${result.secure_url}','${name}','${lastName}','${dateOfBirth}','${idcourse}','${genre}','${signature}')`;
+      connection.query(sql, (error) => {
+        if (error) throw error;
+        res.json({
+          registeredStudent: true,
+        });
+      });
+    } catch {
+      res.status(500).json({ message: "System Error" });
+    }
+  }
+);
 
 module.exports = router;
