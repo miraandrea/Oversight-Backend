@@ -2,6 +2,10 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
+// Modules exports
+const uploadImage = require("../multer");
+const cloudinary = require("../cloudinary");
+
 // Authentication Token Signature
 const tokenSignature = "OAFzGSpmBX9F$agY#$gX4!RnU0Vfgev@mdkO6!1YGwfUzES*^k";
 
@@ -74,6 +78,23 @@ router.post("/v2/teachers", (req, res) => {
     });
   } catch {
     res.status(500).json({ message: "System Error" });
+  }
+});
+
+// Endpoint to add a new teacher in the system
+router.post("/v3/teachers",uploadImage.single("teacherImage"), async (req, res) => {
+  try {
+    const { documentTeacher, name, lastName, idAsignature, genre, signature } = await req.body;
+    const teacherPhoto = await cloudinary.uploader.upload(req.file.path);
+    const sql = `INSERT INTO docentes(documento,foto,nombre,apellido,idasignatura,genero,firma) VALUES(${documentTeacher},'${teacherPhoto.secure_url}','${name}','${lastName}',${idAsignature},'${genre}','${signature}')`;
+    connection.query(sql, (error) => {
+      if (error) throw error;
+      res.status(200).json({
+        registeredTeacher: true,
+      });
+    });
+  } catch{
+    res.status(401).json({ registeredTeacher: false });
   }
 });
 
