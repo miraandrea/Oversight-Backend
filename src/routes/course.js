@@ -37,6 +37,24 @@ router.get("/v3/courses", (req, res) => {
   }
 });
 
+// Api to display all currently created courses
+router.get("/v4/courses", (req, res) => {
+  try {
+    const sql = "CALL pa_todos_los_cursos()";
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        const token = jwt.sign({ results: results[0] }, tokenSignature);
+        return res.status(200).json(token);
+      }
+      const token = jwt.sign({ results: { message: "No courses available" } });
+      return res.status(200).json(token);
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Api to display all students of the corresponding course
 router.get("/v1/courses/:name", (req, res) => {
   try {

@@ -33,6 +33,22 @@ router.get("/v1/students/:name", (req, res) => {
   }
 });
 
+// Endpoint to tokenize a student's information by his or her document
+router.get("/v2/students/:document", (req, res) => {
+  try {
+    const sql = `CALL pa_estudiante_por_documento('${req.params.document}')`;
+    connection.query(sql, (error, result) => {
+      if (error) throw error;
+      if (result.length > 0) {
+        const token = jwt.sign({ results: result[0] }, tokenSignature);
+        return res.status(200).json(token);
+      }
+    });
+  } catch {
+    return res.status(404).json({ message: "Student not found" });
+  }
+});
+
 // Api to visualize all the annotations made to a specific student
 router.get("/v1/students/:name/observers", (req, res) => {
   try {
