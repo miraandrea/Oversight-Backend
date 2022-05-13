@@ -109,4 +109,23 @@ router.post("/v3/students", uploadImage.single("studentImage") , async (req, res
   }
 );
 
+// Api to add a new student in the system
+router.post("/v4/students", uploadImage.single("image") , async (req, res) => {
+  try {
+    const { document, name, lastName,idcourse, dateOfBirth, genre, signature } =
+      req.body;
+    const result = await cloudinary.uploader.upload(req.file.path);
+    const sql = `INSERT INTO estudiantes(documento,foto,nombre,apellido,fecnac,idcurso,genero,firma) VALUES('${document}','${result.secure_url}','${name}','${lastName}','${dateOfBirth}','${idcourse}','${genre}','${signature}')`;
+    connection.query(sql, (error) => {
+      if (error) {
+        return res.status(200).json({registeredStudent:false})
+      };
+      return res.status(200).json({registeredStudent:true});
+    });
+  } catch {
+    return res.status(500).json({ message: "System Error" });
+  }
+}
+);
+
 module.exports = router;
