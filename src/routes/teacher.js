@@ -98,4 +98,22 @@ router.post("/v3/teachers",uploadImage.single("teacherImage"), async (req, res) 
   }
 });
 
+// Endpoint to add a new teacher in the system
+router.post("/v4/teachers",uploadImage.single("image"), async (req, res) => {
+  try {
+    const { document, name, lastName, genre, signature } = await req.body;
+    const photo = await cloudinary.uploader.upload(req.file.path);
+    const sql = `INSERT INTO docentes(documento,foto,nombre,apellido,genero,firma) VALUES(${document},'${photo.secure_url}','${name}','${lastName}','${genre}','${signature}')`;
+    connection.query(sql, (error) => {
+      if (error) {
+        return res.status(200).json({registeredTeacher:false})
+      };
+      return res.status(200).json({registeredTeacher:true});
+    })
+  }
+  catch{
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 module.exports = router;
