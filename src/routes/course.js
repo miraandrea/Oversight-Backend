@@ -37,6 +37,24 @@ router.get("/v3/courses", (req, res) => {
   }
 });
 
+// Api to display all currently created courses
+router.get("/v4/courses", (req, res) => {
+  try {
+    const sql = "CALL pa_todos_los_cursos()";
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        const token = jwt.sign({ results: results[0] }, tokenSignature);
+        return res.status(200).json(token);
+      }
+      const token = jwt.sign({ results: { message: "No courses available" } });
+      return res.status(200).json(token);
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Api to display all students of the corresponding course
 router.get("/v1/courses/:name", (req, res) => {
   try {
@@ -53,78 +71,6 @@ router.get("/v1/courses/:name", (req, res) => {
 });
 
 // Api to add a new course to the database
-router.post("/v1/courses", (req, res) => {
-  try {
-    const { idCourse, name } = req.body;
-    const objCourse = {
-      idcurso: idCourse,
-      nombre: name,
-    };
-    const sql = "INSERT INTO cursos SET ?";
-    connection.query(sql, objCourse, (error) => {
-      if (error) throw error;
-      res.status(200).json({ courseRegistered: true });
-    });
-  } catch {
-    res.status(500).json({ message: "System Error" });
-  }
-});
-
-// Api to add a new course to the database
-router.post("/v2/courses", async (req, res) => {
-  try {
-    const { idCourse, name } = await req.body;
-    const result = await cloudinary.v2.uploader.upload(req.file.path);
-    const objCourse = {
-      idcurso: idCourse,
-      nombre: name,
-      foto: result.url,
-    };
-    const sql = "INSERT INTO cursos SET ?";
-    connection.query(sql, objCourse, (error) => {
-      if (error) throw error;
-      res.status(200).json({ courseRegistered: true });
-    });
-  } catch {
-    res.status(500).json({ message: "System Error" });
-  }
-});
-
-// Api to add a new course to the database
-router.post("/v3/courses", async (req, res) => {
-  try {
-    const { name } = await req.body;
-    const result = await cloudinary.v2.uploader.upload(req.file.path);
-    const objCourse = {
-      nombre: name,
-      foto: result.url,
-    };
-    const sql = "INSERT INTO cursos SET ?";
-    connection.query(sql, objCourse, (error) => {
-      if (error) throw error;
-      res.status(200).json({ courseRegistered: true });
-    });
-  } catch {
-    res.status(500).json({ message: "System Error" });
-  }
-});
-
-// Api to add a new course to the database
-router.post("/v4/courses", async (req, res) => {
-  try {
-    const { name, documentTeacher } = await req.body;
-    const result = await cloudinary.v2.uploader.upload(req.file.path);
-    const sql = `INSERT INTO cursos(nombre,foto,documentoDocente) VALUES('${name}','${result.url}','${documentTeacher}')`;
-    connection.query(sql, objCourse, (error) => {
-      if (error) throw error;
-      res.status(200).json({ courseRegistered: true });
-    });
-  } catch {
-    res.status(400).json({ message: "System Error" });
-  }
-});
-
-// Api to add a new course to the database
 router.post("/v5/courses", uploadImage.single("image"), async (req, res) => {
   try {
     const { name, documentTeacher } = await req.body;
@@ -135,7 +81,7 @@ router.post("/v5/courses", uploadImage.single("image"), async (req, res) => {
       res.status(200).json({ courseRegistered: true });
     });
   } catch {
-    res.status(400).json({ message: "System Error" });
+    res.status(400).json({ courseRegistered: false });
   }
 });
 
