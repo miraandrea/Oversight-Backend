@@ -72,59 +72,6 @@ router.get("/v1/teachers/:document/observers", (req, res) => {
   }
 });
 
-// Api to add a new teacher in the system
-router.post("/v2/teachers", (req, res) => {
-  try {
-    const sql = `INSERT INTO docentes SET ?`;
-    const objTeacher = {
-      iddocente: req.body.document,
-      foto: req.body.photo,
-      nombre: req.body.name,
-      apellido: req.body.lastName,
-      idasignatura: req.body.subject,
-      fecnac: req.body.dateBirth,
-      sexo: req.body.sex,
-      firma: req.body.signature,
-    };
-    connection.query(sql, objTeacher, (error) => {
-      if (error) throw error;
-      res.json({
-        registeredTeacher: true,
-      });
-    });
-  } catch {
-    res.status(500).json({ message: "System Error" });
-  }
-});
-
-// Endpoint to add a new teacher in the system
-router.post(
-  "/v3/teachers",
-  uploadImage.single("teacherImage"),
-  async (req, res) => {
-    try {
-      const {
-        documentTeacher,
-        name,
-        lastName,
-        idAsignature,
-        genre,
-        signature,
-      } = await req.body;
-      const teacherPhoto = await cloudinary.uploader.upload(req.file.path);
-      const sql = `INSERT INTO docentes(documento,foto,nombre,apellido,idasignatura,genero,firma) VALUES(${documentTeacher},'${teacherPhoto.secure_url}','${name}','${lastName}',${idAsignature},'${genre}','${signature}')`;
-      connection.query(sql, (error) => {
-        if (error) throw error;
-        res.status(200).json({
-          registeredTeacher: true,
-        });
-      });
-    } catch {
-      res.status(401).json({ registeredTeacher: false });
-    }
-  }
-);
-
 // Endpoint to add a new teacher in the system
 router.post("/v4/teachers", uploadImage.single("image"), async (req, res) => {
   try {
