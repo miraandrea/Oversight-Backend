@@ -7,20 +7,24 @@ const cors = require("cors");
 const app = express();
 
 // Apis
+const apiRootPage = require('./routes/rootPage');
+const apiAuth = require('./routes/auth');
 const apiStudents = require("./routes/student");
 const apiTeachers = require("./routes/teacher");
 const apiTokens = require("./routes/token");
 const apiCourses = require("./routes/course");
-const apiAdministrators = require("./routes/administrator");
+const apiNotFound = require("./routes/notfound");
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use(apiRootPage);
+app.use(apiAuth);
 app.use(apiStudents);
 app.use(apiTeachers);
 app.use(apiTokens);
 app.use(apiCourses);
-app.use(apiAdministrators);
+app.use(apiNotFound);
 
 module.exports = app;
