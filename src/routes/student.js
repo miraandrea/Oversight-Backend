@@ -81,51 +81,7 @@ router.get("/v2/students/:document/observers", (req, res) => {
   }
 });
 
-// Api to add a new student in the system
-router.post("/v2/students", (req, res) => {
-  try {
-    const sql = `INSERT INTO estudiantes SET ?`;
-    const objStudent = {
-      idestudiante: req.body.document,
-      foto: req.body.photo,
-      nombre: req.body.name,
-      apellido: req.body.lastName,
-      idcurso: req.body.course,
-      fecnac: req.body.dateBirth,
-      sexo: req.body.sex,
-      firma: req.body.signature,
-    };
-    connection.query(sql, objStudent, (error) => {
-      if (error) throw error;
-      res.json({
-        registeredStudent: true,
-      });
-    });
-  } catch {
-    res.status(500).json({ message: "System Error" });
-  }
-});
-
-// Api to add a new student in the system
-router.post("/v3/students", uploadImage.single("studentImage") , async (req, res) => {
-    try {
-      const { document, name, lastName,idcourse, dateOfBirth, genre, signature } =
-        req.body;
-      const result = await cloudinary.uploader.upload(req.file.path);
-      const sql = `INSERT INTO estudiantes(documento,foto,nombre,apellido,fecnac,idcurso,genero,firma) VALUES('${document}','${result.secure_url}','${name}','${lastName}','${dateOfBirth}','${idcourse}','${genre}','${signature}')`;
-      connection.query(sql, (error) => {
-        if (error) throw error;
-        res.json({
-          registeredStudent: true,
-        });
-      });
-    } catch {
-      res.status(500).json({ message: "System Error" });
-    }
-  }
-);
-
-// Api to add a new student in the system
+// Endpoint to add a new student in the system
 router.post("/v4/students", uploadImage.single("image") , async (req, res) => {
   try {
     const { document, name, lastName,idcourse, dateOfBirth, genre, signature } =
