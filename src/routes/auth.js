@@ -52,4 +52,48 @@ router.post("/v4/authenticate", (req, res) => {
   }
 });
 
+// Endpoint to validate if a user can authenticate to the system
+router.post("/v5/authenticate", (req, res) => {
+  try {
+    const sql = `SELECT documento FROM administradores WHERE documento = '${req.body.username}' AND documento = '${req.body.password}'`;
+    connection.query(sql, (err, result) => {
+      if (err) throw err;
+      if (result.length > 0) {
+        return res.status(200).json({
+          authentication: true,
+          rol: "Administrator",
+          data: result,
+        });
+      } else {
+        const sql = `SELECT documento FROM docentes WHERE documento = '${req.body.username}' AND documento = '${req.body.password}'`;
+        connection.query(sql, (err, result) => {
+          if (err) throw err;
+          if (result.length > 0) {
+            return res.status(200).json({
+              authentication: true,
+              rol: "Teacher",
+              data: result,
+            });
+          } else {
+            const sql = `SELECT documento FROM estudiantes WHERE documento = '${req.body.username}' AND documento = '${req.body.password}'`;
+            connection.query(sql, (err, result) => {
+              if (err) throw err;
+              if (result.length > 0) {
+                return res.status(200).json({
+                  authentication: true,
+                  rol: "Student",
+                  data: result,
+                });
+              } else {
+                return res.status(200).json({ authentication: false });
+              }
+            });
+          }
+        });
+      }
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
 module.exports = router;
