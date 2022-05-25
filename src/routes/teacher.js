@@ -36,23 +36,20 @@ router.get("/v1/teachers", (req, res) => {
   }
 });
 
-// Api to display a specific teacher according to their name
-router.get("/v1/teachers/:name", (req, res) => {
+// Endpoint to display a specific teacher according to their document
+router.get("/v1/teachers/:document", (req, res) => {
   try {
-    const sql = `CALL pa_docente_por_nombre('${req.params.name}')`;
+    const sql = `CALL pa_docente_por_documento(${req.params.document})`;
     connection.query(sql, (error, result) => {
       if (error) throw error;
       if (result.length > 0) {
-        console.log(result[0]);
-        const token = jwt.sign({ result: result[0] }, tokenSignature);
-        res.status(200).json(token);
-      } else {
-        const token = jwt.sign({ existProfessor: false }, tokenSignature);
-        res.status(200).json(token);
+        const token = jwt.sign({ results: result[0] }, tokenSignature);
+        return res.status(200).json(token);
       }
+      return res.status(404).json({ message: "Teacher not found" });
     });
   } catch {
-    res.status(500).json({ message: "System Error" });
+    return res.status(500).json({ message: "System Error" });
   }
 });
 
