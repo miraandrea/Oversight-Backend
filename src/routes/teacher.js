@@ -69,6 +69,22 @@ router.get("/v1/teachers/:document/observers", (req, res) => {
   }
 });
 
+// Endpoint to display all courses available to a single teacher
+router.get("/v1/teachers/:document/courses", (req, res) => {
+  try {
+    const sql = `CALL pa_director_grupo (${req.params.document})`;
+    connection.query(sql, (error, results) => {
+      if (error) throw error;
+      if (results.length > 0) {
+        const token = jwt.sign({ results: results[0] }, tokenSignature);
+        return res.status(200).json(token);
+      }
+    });
+  } catch {
+    return res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Endpoint to add a new teacher in the system
 router.post("/v4/teachers", uploadImage.single("image"), async (req, res) => {
   try {
