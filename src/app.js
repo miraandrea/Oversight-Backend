@@ -13,7 +13,7 @@ const apiStudents = require("./routes/student");
 const apiTeachers = require("./routes/teacher");
 const apiTokens = require("./routes/token");
 const apiCourses = require("./routes/course");
-const apiNotFound = require("./routes/notfound");
+const apiNotFound = require("./routes/notFound");
 
 // Middlewares
 app.use(express.json());
