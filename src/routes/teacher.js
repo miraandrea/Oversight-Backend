@@ -93,9 +93,9 @@ router.post("/v4/teachers", uploadImage.single("image"), async (req, res) => {
     const sql = `INSERT INTO docentes(documento,foto,nombre,apellido,genero,firma) VALUES(${document},'${photo.secure_url}','${name}','${lastName}','${genre}','${signature}')`;
     connection.query(sql, (error) => {
       if (error) {
-        return res.status(200).json({ registeredTeacher: false });
+        return res.status(200).json({ registered: false });
       }
-      return res.status(200).json({ registeredTeacher: true });
+      return res.status(200).json({ registered: true });
     });
   } catch {
     res.status(500).json({ message: "System Error" });
