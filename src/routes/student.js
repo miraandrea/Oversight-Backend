@@ -97,9 +97,9 @@ router.post("/v4/students", uploadImage.single("image"), async (req, res) => {
     const sql = `INSERT INTO estudiantes(documento,foto,nombre,apellido,fecnac,idcurso,genero,firma) VALUES('${document}','${result.secure_url}','${name}','${lastName}','${dateOfBirth}','${idcourse}','${genre}','${signature}')`;
     connection.query(sql, (error) => {
       if (error) {
-        return res.status(200).json({ registeredStudent: false });
+        return res.status(200).json({ registered: false });
       }
-      return res.status(200).json({ registeredStudent: true });
+      return res.status(200).json({ registered: true });
     });
   } catch {
     return res.status(500).json({ message: "System Error" });
@@ -110,18 +110,18 @@ router.post("/v4/students", uploadImage.single("image"), async (req, res) => {
 router.post("/v1/students/:document/observers", (req, res) => {
   try {
     const { document } = req.params;
-    const { title, description, documentTeacher, date, signatureStudent, signatureTeacher } = req.body;
-    const sql = `CALL pa_agregar_anotacion_estudiante(${document},'${title}',${documentTeacher},'${date}','${description}','${signatureStudent}','${signatureTeacher}')`;
+    const { title, descriptionStudent,descriptionTeacher, documentTeacher, date, signatureStudent, signatureTeacher } = req.body;
+    const sql = `CALL pa_agregar_anotacion_estudiante(${document},'${title}',${documentTeacher},'${date}','${descriptionStudent}','${descriptionTeacher}','${signatureStudent}','${signatureTeacher}')`;
     connection.query(sql, (error) => {
       if (error) throw error;
       const token = jwt.sign(
-        { results: { message: "Observed created" } },
+        { results: { message: true} },
         tokenSignature
       );
       return res.status(200).json(token);
     });
   } catch {
-    res.status(500).json({ message: "System Error" });
+    res.status(500).json({ message: false });
   }
 });
 
