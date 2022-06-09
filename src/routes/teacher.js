@@ -102,4 +102,21 @@ router.post("/v4/teachers", uploadImage.single("image"), async (req, res) => {
   }
 });
 
+
+// Api to display a teacher by name based on the name parameter
+router.get("/v1/teacher/:name", (req, res) => {
+  try {
+    const sql = `CALL pa_buscador_docente('${req.params.name}')`;
+    connection.query(sql, (error, result) => {
+      if (error) throw error;
+      if (result.length > 0) {
+        const token = jwt.sign({ results: result }, tokenSignature);
+        res.status(200).json(token);
+      }
+    });
+  } catch {
+    res.status(500).json({ message: "System Error" });
+  }
+});
+
 module.exports = router;
