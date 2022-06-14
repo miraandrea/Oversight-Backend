@@ -53,6 +53,23 @@ router.get("/v1/teachers/:document", (req, res) => {
   }
 });
 
+// Endpoint to modify a specific teacher's information
+router.put("/v1/teachers/:document", uploadImage.single("image"), async (req,res)=>{
+  try{
+    const { documentOld, name, lastName, genre, signature,idasignature } = await req.body;
+    const { document } = req.params;
+    const photo = await cloudinary.uploader.upload(req.file.path);
+    const sql = `CALL pa_editar_docente('${document}','${photo.secure_url}','${name}','${lastName}','${idasignature}','${genre}','${signature}','${documentOld}')`;
+    connection.query(sql, (error)=>{
+      if(error) throw error;
+      return res.status(200).json({message:"Teacher modificated"});
+    })
+  }
+  catch{
+    return res.status(500).json({ message: "System Error" });
+  }
+})
+
 // Endpoint to view all the observations made by a teacher
 router.get("/v1/teachers/:document/observers", (req, res) => {
   try {
