@@ -49,6 +49,24 @@ router.get("/v2/students/:document", (req, res) => {
   }
 });
 
+// Endpoint to modify the information of a specific student.
+router.put("/v1/students/:document", uploadImage.single("image"), async (req,res)=>{
+  try{
+    const { newDocument, name, lastName, genre, signature,idcourse,dateOfBirth } = await req.body;
+    const { document } = req.params;
+    const photo = await cloudinary.uploader.upload(req.file.path);
+    const sql = `CALL pa_editar_estudiante('${newDocument}','${photo.secure_url}','${name}','${lastName}','${idcourse}','${dateOfBirth}','${genre}','${signature}','${document}')`;
+    connection.query(sql, (error)=>{
+      if(error) throw error;
+      const token = jwt.sign({ results: {message:"Student Modificated"} }, tokenSignature);
+      return res.status(200).json(token);
+    })
+  }
+  catch{
+    return res.status(500).json({ message: "System Error" });
+  }
+})
+
 // Api to visualize all the annotations made to a specific student
 router.get("/v1/students/:name/observers", (req, res) => {
   try {
