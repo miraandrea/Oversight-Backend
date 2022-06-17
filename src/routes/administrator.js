@@ -2,6 +2,10 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 
+// Modules exports
+const uploadImage = require("../multer");
+const cloudinary = require("../cloudinary");
+
 // Authentication Token Signature
 const tokenSignature = "OAFzGSpmBX9F$agY#$gX4!RnU0Vfgev@mdkO6!1YGwfUzES*^k";
 
@@ -9,7 +13,7 @@ const tokenSignature = "OAFzGSpmBX9F$agY#$gX4!RnU0Vfgev@mdkO6!1YGwfUzES*^k";
 const router = express.Router();
 
 // Database
-connection = require("../database");
+const connection = require("../database");
 
 // Endpoint to display all administrators
 router.get("/v1/administrators", (req, res) => {
@@ -53,5 +57,22 @@ router.get("/v1/administrators/:document", (req, res) => {
     return res.status(500).json({ message: "System Error" });
   }
 });
+
+// Endpoint to modify the information of a specific administrator 
+router.put("/v1/administrators/:document",uploadImage.single("image"), async(req,res)=>{
+  try{
+    const {document,name,lastName} = req.body;
+    const photo = await cloudinary.uploader.upload(req.file.path);
+    const sql = `CALL pa_editar_administrador('${req.params.document}','${photo.secure_url}','${name}','${lastName}','${document}')`;
+    connection.query(sql, (error) => {
+      if (error) throw error;
+      return res.status(200).json({ message: "Administrator Modificated" });
+    });
+  }
+  catch(e){
+    console.log(e);
+    return res.status(500).json({ message: "System Error" });
+  }
+})
 
 module.exports = router;
