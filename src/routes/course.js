@@ -78,7 +78,7 @@ router.post("/v5/courses", uploadImage.single("image"), async (req, res) => {
     const sql = `INSERT INTO cursos(nombre,foto,documentoDocente) VALUES('${name}','${result.secure_url}',${documentTeacher})`;
     connection.query(sql, (error) => {
       if (error) throw error;
-      res.status(200).json({ courseRegistered: true });
+      res.status(200).json({ courseRegistered: true });np
     });
   } catch {
     res.status(400).json({ courseRegistered: false });
