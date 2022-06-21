@@ -72,8 +72,13 @@ router.delete("/v1/students/:document",(req,res)=>{
   try{
     const sql = `CALL pa_eliminar_estudiante_por_documento('${req.params.document}')`;
     connection.query(sql,(error)=>{
-      if(error) throw error;
-      return res.status(201).json({ message: "Student Deleted" });
+      if(error){
+        return res
+          .status(400)
+          .json({ results: { message: "Error, Student can't deleted" } });
+      }
+      const token = jwt.sign({results:{ message: "Student Deleted" }}, tokenSignature);
+      return res.status(202).json(token);
     })
   }
   catch(e){
