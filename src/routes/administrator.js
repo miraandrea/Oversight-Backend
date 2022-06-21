@@ -61,16 +61,16 @@ router.get("/v1/administrators/:document", (req, res) => {
 // Endpoint to modify the information of a specific administrator 
 router.put("/v1/administrators/:document",uploadImage.single("image"), async(req,res)=>{
   try{
-    const {document,name,lastName} = req.body;
+    const {newDocument,name,lastName} = req.body;
     const photo = await cloudinary.uploader.upload(req.file.path);
-    const sql = `CALL pa_editar_administrador('${req.params.document}','${photo.secure_url}','${name}','${lastName}','${document}')`;
-    connection.query(sql, (error) => {
-      if (error) throw error;
-      return res.status(200).json({ message: "Administrator Modificated" });
-    });
+    const sql = `CALL pa_editar_administrador('${req.params.document}','${photo.secure_url}','${name}','${lastName}','${newDocument}')`;
+    connection.query(sql, (error)=>{
+      if(error) throw error;
+      const token = jwt.sign({ results: {message:"Administrator Modificated"} }, tokenSignature);
+      return res.status(200).json(token);
+    })
   }
-  catch(e){
-    console.log(e);
+  catch{
     return res.status(500).json({ message: "System Error" });
   }
 })
