@@ -67,6 +67,25 @@ router.put("/v1/students/:document", uploadImage.single("image"), async (req,res
   }
 })
 
+// Endpoint to delete a specific student
+router.delete("/v1/students/:document",(req,res)=>{
+  try{
+    const sql = `CALL pa_eliminar_estudiante_por_documento('${req.params.document}')`;
+    connection.query(sql,(error)=>{
+      if(error){
+        return res
+          .status(400)
+          .json({ results: { message: "Error, Student can't deleted" } });
+      }
+      const token = jwt.sign({results:{ message: "Student Deleted" }}, tokenSignature);
+      return res.status(202).json(token);
+    })
+  }
+  catch(e){
+    return res.status(500).json({ message: "System Error" });
+  }
+})
+
 // Api to visualize all the annotations made to a specific student
 router.get("/v1/students/:name/observers", (req, res) => {
   try {
