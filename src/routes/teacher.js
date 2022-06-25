@@ -71,6 +71,20 @@ router.put("/v1/teachers/:document", uploadImage.single("image"), async (req,res
   }
 })
 
+// Endpoint to delete specific teacher
+router.delete('/v1/teachers/:document',(req,res)=>{
+  try {
+    const sql = `CALL pa_eliminar_docente_por_documento(${req.params.document})`;
+    connection.query(sql, (error) => {
+      if (error)
+        return res.status(400).json({ message: "Error, teacher not deleted" });
+      return res.status(202).json({ message: "Teacher deleted" });
+    });
+  } catch {
+    return res.status(500).json({ message: "System Error" });
+  }
+})
+
 // Endpoint to view all the observations made by a teacher
 router.get("/v1/teachers/:document/observers", (req, res) => {
   try {
