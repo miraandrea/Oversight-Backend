@@ -118,6 +118,25 @@ router.get("/v2/students/:document/observers", (req, res) => {
   }
 });
 
+// Endpoint to visualize all disabled students
+router.get('/v1/disabled/students',(req,res)=>{
+  try{
+    const sql = `CALL pa_estudiante_deshabilitado()`;
+    connection.query(sql,(error,results)=>{
+      if(error) return res.status(400).json({message:"Upsss, Error"});
+      if(results.length>0){
+        const token = jwt.sign({results:results[0]},tokenSignature)
+        return res.status(200).json(token);
+      }
+      const token = jwt.sign({ message: "Students not found" }, tokenSignature);
+      return res.status(200).json(token);
+    })
+  }
+  catch{
+    return res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Endpoint to add a new student in the system
 router.post("/v4/students", uploadImage.single("image"), async (req, res) => {
   try {
