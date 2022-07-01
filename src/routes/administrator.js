@@ -80,9 +80,9 @@ router.put('/v1/administrators/:document/students/:documentStudent',(req,res)=>{
   try{
     const {documentStudent} = req.params;
     const { newDocument, name, lastName, idcourse } = req.body;
-    const sql = `CALL pa_actualizar__estudiante_por_administrador('${documentStudent}','${newDocumentStudent}','${name}','${lastName}','${idcourse}')`;
+    const sql = `CALL pa_actualizar__estudiante_por_administrador('${documentStudent}','${newDocument}','${name}','${lastName}','${idcourse}')`;
     connection.query(sql,(error)=>{
-      if(error) return res.status(400).json({message:"Student not modificated"});
+      if(error) return  res.status(400).json({message:"Student not modificated"});
       return res.status(202).json({message:"Student modificated"});
     })
   }
@@ -97,10 +97,12 @@ router.put('/v1/administrators/:document/students/:documentStudent',(req,res)=>{
 router.put('/v1/administrators/:document/teachers/:documenTeachers',(req,res)=>{
   try{
     const {documenTeachers} = req.params;
-    const { newDocument, name, lastName } = req.body;
-    const sql = `CALL pa_actualizar__docente_por_administrador('${documenTeachers}','${newDocumenTeachers}','${name}','${lastName}','${idcourse}')`;
+    const { name, lastName } = req.body;
+    const sql = `CALL pa_actualizar__docente_por_administrador('${documenTeachers}','${name}','${lastName}')`;
     connection.query(sql,(error)=>{
-      if(error) return res.status(400).json({message:"Teacher not modificated"});
+      if(error) {
+        console.log(error);
+        return res.status(400).json({message:"Teacher not modificated"})};
       return res.status(202).json({ message: "Teacher modificated" });
     })
   }
@@ -110,4 +112,5 @@ router.put('/v1/administrators/:document/teachers/:documenTeachers',(req,res)=>{
 
   }
 });
+
 module.exports = router;

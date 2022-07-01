@@ -120,9 +120,9 @@ router.get("/v1/teachers/:document/courses", (req, res) => {
 // Endpoint to add a new teacher in the system
 router.post("/v4/teachers", uploadImage.single("image"), async (req, res) => {
   try {
-    const { document, name, lastName, genre, signature } = await req.body;
+    const { document, name, lastName, genre, signature, active } = await req.body;
     const photo = await cloudinary.uploader.upload(req.file.path);
-    const sql = `INSERT INTO docentes(documento,foto,nombre,apellido,genero,firma) VALUES(${document},'${photo.secure_url}','${name}','${lastName}','${genre}','${signature}')`;
+    const sql = `INSERT INTO docentes(documento,foto,nombre,apellido,genero,firma,activo) VALUES(${document},'${photo.secure_url}','${name}','${lastName}','${genre}','${signature}',${active})`;
     connection.query(sql, (error) => {
       if (error) {
         return res.status(200).json({ registered: false });
@@ -133,7 +133,6 @@ router.post("/v4/teachers", uploadImage.single("image"), async (req, res) => {
     res.status(500).json({ message: "System Error" });
   }
 });
-
 
 // Api to display a teacher by name based on the name parameter
 router.get("/v1/teacher/:name", (req, res) => {

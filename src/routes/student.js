@@ -129,9 +129,10 @@ router.post("/v4/students", uploadImage.single("image"), async (req, res) => {
       dateOfBirth,
       genre,
       signature,
+      active
     } = req.body;
     const result = await cloudinary.uploader.upload(req.file.path);
-    const sql = `INSERT INTO estudiantes(documento,foto,nombre,apellido,fecnac,idcurso,genero,firma) VALUES('${document}','${result.secure_url}','${name}','${lastName}','${dateOfBirth}','${idcourse}','${genre}','${signature}')`;
+    const sql = `INSERT INTO estudiantes(documento,foto,nombre,apellido,fecnac,idcurso,genero,firma,Activo) VALUES('${document}','${result.secure_url}','${name}','${lastName}','${dateOfBirth}','${idcourse}','${genre}','${signature}',${active})`;
     connection.query(sql, (error) => {
       if (error) {
         return res.status(200).json({ registered: false });
