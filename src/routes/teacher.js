@@ -17,6 +17,41 @@ const connection = require("../database");
 
 // Routes
 
+// Endpoint to visualize all disabled teachers
+router.get('/v1/disabled/teachers',(req,res)=>{
+  try{
+    const sql = `CALL pa_docente_deshabilitado()`;
+    connection.query(sql,(error,results)=>{
+      if(error) return res.status(400).json({message:"Upsss, Error"});
+      if(results.length>0){
+        const token = jwt.sign({results:results[0]},tokenSignature)
+        return res.status(200).json(token);
+      }
+      const token = jwt.sign({ results: "Teachers not found" }, tokenSignature);
+      return res.status(200).json(token);
+    })
+  }
+  catch{
+    return res.status(500).json({ message: "System Error" });
+  }
+});
+
+// Endpoint to enable teachers
+router.put('/v1/disabled/teachers/:document/enable',(req,res)=>{
+  try{
+    const sql = `CALL pa_habilitar_docente('${req.params.document}')`;
+    connection.query(sql,(error)=>{
+      if (error)
+        return res.status(400).json({ results: { message: "Upsss, Error" } });
+      const token = jwt.sign({ results: {results:"Teacher enable"} }, tokenSignature);
+      return res.status(200).json(token);
+    })
+  }
+  catch{
+    return res.status(500).json({ message: "System Error" });
+  }
+});
+
 // Api to display all currently created teachers
 router.get("/v1/teachers", (req, res) => {
   try {
